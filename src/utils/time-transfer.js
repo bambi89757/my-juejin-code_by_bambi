@@ -118,59 +118,53 @@ function culcMinute(tz) {
     return h + m;
 }
 
-	/**
-	* @unix {number|Date} 时间戳 - 1564704000000格式
-	* @timeZone {str} 时区字符串 - '+04:00'、'+00:00'格式
-	* @returns {str} - '2015-01-01 12:12:12'格式
-	*/
-	export const transfer2Datetime = (unix, timeZone) => {
-        const gap = culcMinute(timeZone);
-        const targetTimeUnixIfUTC = unix + gap * 60 * 1000;
-		const t = new Date(targetTimeUnixIfUTC)
-		return `${t.getUTCFullYear()}-` +
-			`${pl0(t.getUTCMonth() + 1)}-` +
-			`${pl0(t.getUTCDate())} ` +
-			`${pl0(t.getUTCHours())}:` +
-			`${pl0(t.getUTCMinutes())}:` +
-			`${pl0(t.getUTCSeconds())}`;
-	}
+/**
+* @unix {number|Date} 时间戳 - 1564704000000格式
+* @timeZone {str} 时区字符串 - '+04:00'、'+00:00'格式
+* @returns {str} - '2015-01-01 12:12:12'格式
+*/
+export const transfer2Datetime = (unix, timeZone) => {
+    const gap = culcMinute(timeZone);
+    const targetTimeUnixIfUTC = unix + gap * 60 * 1000;
+    const t = new Date(targetTimeUnixIfUTC)
+    return `${t.getUTCFullYear()}-` +
+        `${pl0(t.getUTCMonth() + 1)}-` +
+        `${pl0(t.getUTCDate())} ` +
+        `${pl0(t.getUTCHours())}:` +
+        `${pl0(t.getUTCMinutes())}:` +
+        `${pl0(t.getUTCSeconds())}`;
+}
 
-    export const culc2Datetime = (unix, timeZone) => {
-        // 计算日期需要的常量
-        const d = new Date(unix);
-        const monthCycleDays = [31,, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        const getMonthCycleDays = (month, year) => monthCycleDays[month] ? monthCycleDays[month] : (year % 4 ? 29 : 28)
-        const UTCMonth = d.getUTCMonth();
-        const lastUTCMonth = UTCMonth - 1;
-        const UTCYear = d.getUTCFullYear();
-        const currentCycleDays = getMonthCycleDays(UTCMonth, UTCYear);
-        const lastCycleDays = getMonthCycleDays(lastUTCMonth + (lastUTCMonth >= 0 ? 0 : 12), UTCYear);
+export const culc2Datetime = (unix, timeZone) => {
+    // 计算日期需要的常量
+    const d = new Date(unix);
+    const monthCycleDays = [31,, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    const getMonthCycleDays = (month, year) => monthCycleDays[month] ? monthCycleDays[month] : (year % 4 ? 29 : 28)
+    const UTCMonth = d.getUTCMonth();
+    const lastUTCMonth = UTCMonth - 1;
+    const UTCYear = d.getUTCFullYear();
+    const currentCycleDays = getMonthCycleDays(UTCMonth, UTCYear);
+    const lastCycleDays = getMonthCycleDays(lastUTCMonth + (lastUTCMonth >= 0 ? 0 : 12), UTCYear);
 
-        // 开始计算
-        const gapSeconds = culcMinute(timeZone) * 60;
-        console.log('gapSeconds', gapSeconds)
-        const orgSeconds = d.getUTCSeconds() + gapSeconds;
-        const modSeconds = orgSeconds % 60;
-        const seconds = pl0(modSeconds + (modSeconds >= 0 ? 0 : 60));
-        console.log('Seconds', seconds, orgSeconds)
-        const orgMinutes =  d.getUTCMinutes() + Math.floor(orgSeconds / 60);
-        const modMinutes = orgMinutes % 60;
-        const minutes = pl0(modMinutes + (modMinutes >= 0 ? 0 : 60));
-        console.log('Minutes', minutes, orgMinutes)
-        const orgHours =  d.getUTCHours() + Math.floor(orgMinutes / 60);
-        const modHours = orgHours % 24;
-        const hours = pl0(modHours + (modHours >= 0 ? 0 : 24));
-        console.log('Hours', hours, orgHours)
-        const orgDate =  d.getUTCDate() + Math.floor(orgHours / 24);
-        const modDate = orgDate % currentCycleDays;
-        const date = pl0(modDate + (modDate > 0 ? 0 : lastCycleDays));
-        console.log('Date', date, orgDate)
-        const orgMonth =  d.getUTCMonth() + Math.floor(orgDate / currentCycleDays);
-        const modgMonth = orgMonth % 12;
-        const month = pl0(modgMonth + 1 + (modgMonth >= 0 ? 0 : 12));
-        const year = d.getUTCFullYear() + Math.floor(orgMonth / 12);
-        console.log('Month', month, orgMonth)
-        return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}${timeZone}`;
-	}
+    // 开始计算
+    const gapSeconds = culcMinute(timeZone) * 60;
+    const orgSeconds = d.getUTCSeconds() + gapSeconds;
+    const modSeconds = orgSeconds % 60;
+    const seconds = pl0(modSeconds + (modSeconds >= 0 ? 0 : 60));
+    const orgMinutes =  d.getUTCMinutes() + Math.floor(orgSeconds / 60);
+    const modMinutes = orgMinutes % 60;
+    const minutes = pl0(modMinutes + (modMinutes >= 0 ? 0 : 60));
+    const orgHours =  d.getUTCHours() + Math.floor(orgMinutes / 60);
+    const modHours = orgHours % 24;
+    const hours = pl0(modHours + (modHours >= 0 ? 0 : 24));
+    const orgDate =  d.getUTCDate() + Math.floor(orgHours / 24);
+    const modDate = orgDate % currentCycleDays;
+    const date = pl0(modDate + (modDate > 0 ? 0 : lastCycleDays));
+    const orgMonth =  d.getUTCMonth() + Math.floor(orgDate / currentCycleDays);
+    const modgMonth = orgMonth % 12;
+    const month = pl0(modgMonth + 1 + (modgMonth >= 0 ? 0 : 12));
+    const year = d.getUTCFullYear() + Math.floor(orgMonth / 12);
+    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}${timeZone}`;
+}
 
 
