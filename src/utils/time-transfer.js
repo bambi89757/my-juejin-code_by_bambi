@@ -20,7 +20,7 @@ function getOffsetTz(minute) {
              + m.replace(/^\d$/, '0$')
 }
 
-function placeZero(date) {
+function placeZeroTime(date) {
     if (!/[0-5][0-9]:[0-5][0-9]$/.test(date)) return date +  ' 00:00:00';
     return date;
 }
@@ -51,7 +51,7 @@ export const transfer2Unix = (date, timeZone) => {
     if (!/^[+-][01][0-9][0-5][0-9]$|^undefined$|^$/.test(timeZone)) return Error2;
     
     // 6.1 date是字符串，加入时区之前需要保证含有hh:mm
-    date = placeZero(date);
+    date = placeZeroTime(date);
     // 6.2 【Success】date是合法字符，没传timeZone，默认是本地时区不用处理timeZone
     if (!timeZone) return new Date(date).getTime();
     // 6.3 【Success】date是合法字符，可以直接拼接timeZone字符，直接得出Unix。
@@ -79,7 +79,7 @@ export const culc2Unix = (date, timeZone) => {
     if (!/^[+-][01][0-9][0-5][0-9]$|^undefined$|^$/.test(timeZone)) return Error2;
     
     // 6.1 date是字符串，加入时区之前需要保证含有hh:mm
-    date = placeZero(date);
+    date = placeZeroTime(date);
     // 6.2 【Success】date是合法字符，没传timeZone，默认是本地时区不用处理timeZone
     if (!timeZone) return new Date(date).getTime();
     // 6.2 【Success】date是合法字符，需要配合timeZone，进行毫秒计算，来得出Unix。
@@ -105,3 +105,72 @@ export const getAnyTimespan = (date, timeZone) => {
     }
     return date;
 }
+
+function pl0(timeString) {
+    return `${timeString}`.replace(/^(\d)$/,'0$1');
+}
+
+// 计算以分钟为单位的时区gap，例如 '+04:00'被转换为240
+function culcMinute(tz) {
+    const time = [tz.slice(0,3), tz.slice(3,5)];
+    const h = parseInt(time[0]) * 60;
+    const m = tz[0] === '-' ? - parseInt(time[1]) : parseInt(time[1])
+    return h + m;
+}
+
+	/**
+	* @unix {number|Date} 时间戳 - 1564704000000格式
+	* @timeZone {str} 时区字符串 - '+04:00'、'+00:00'格式
+	* @returns {str} - '2015-01-01 12:12:12'格式
+	*/
+	export const transfer2Datetime = (unix, timeZone) => {
+        const gap = culcMinute(timeZone);
+        const targetTimeUnixIfUTC = unix + gap * 60 * 1000;
+		const t = new Date(targetTimeUnixIfUTC)
+		return `${t.getUTCFullYear()}-` +
+			`${pl0(t.getUTCMonth() + 1)}-` +
+			`${pl0(t.getUTCDate())} ` +
+			`${pl0(t.getUTCHours())}:` +
+			`${pl0(t.getUTCMinutes())}:` +
+			`${pl0(t.getUTCSeconds())}`;
+	}
+
+    export const culc2Datetime = (unix, timeZone) => {
+        // 计算日期需要的常量
+        const d = new Date(unix);
+        const monthCycleDays = [31,, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        const getMonthCycleDays = (month, year) => monthCycleDays[month] ? monthCycleDays[month] : (year % 4 ? 29 : 28)
+        const UTCMonth = d.getUTCMonth();
+        const lastUTCMonth = UTCMonth - 1;
+        const UTCYear = d.getUTCFullYear();
+        const currentCycleDays = getMonthCycleDays(UTCMonth, UTCYear);
+        const lastCycleDays = getMonthCycleDays(lastUTCMonth + (lastUTCMonth >= 0 ? 0 : 12), UTCYear);
+
+        // 开始计算
+        const gapSeconds = culcMinute(timeZone) * 60;
+        console.log('gapSeconds', gapSeconds)
+        const orgSeconds = d.getUTCSeconds() + gapSeconds;
+        const modSeconds = orgSeconds % 60;
+        const seconds = pl0(modSeconds + (modSeconds >= 0 ? 0 : 60));
+        console.log('Seconds', seconds, orgSeconds)
+        const orgMinutes =  d.getUTCMinutes() + Math.floor(orgSeconds / 60);
+        const modMinutes = orgMinutes % 60;
+        const minutes = pl0(modMinutes + (modMinutes >= 0 ? 0 : 60));
+        console.log('Minutes', minutes, orgMinutes)
+        const orgHours =  d.getUTCHours() + Math.floor(orgMinutes / 60);
+        const modHours = orgHours % 24;
+        const hours = pl0(modHours + (modHours >= 0 ? 0 : 24));
+        console.log('Hours', hours, orgHours)
+        const orgDate =  d.getUTCDate() + Math.floor(orgHours / 24);
+        const modDate = orgDate % currentCycleDays;
+        const date = pl0(modDate + (modDate > 0 ? 0 : lastCycleDays));
+        console.log('Date', date, orgDate)
+        const orgMonth =  d.getUTCMonth() + Math.floor(orgDate / currentCycleDays);
+        const modgMonth = orgMonth % 12;
+        const month = pl0(modgMonth + 1 + (modgMonth >= 0 ? 0 : 12));
+        const year = d.getUTCFullYear() + Math.floor(orgMonth / 12);
+        console.log('Month', month, orgMonth)
+        return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}${timeZone}`;
+	}
+
+
