@@ -167,4 +167,23 @@ export const culc2Datetime = (unix, timeZone) => {
     return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}${timeZone}`;
 }
 
+export function Tz (date) {
+    date = /^\d+$/.test(date) ? +date : date;
+    const datetime = new Date(date).toString();
+    this.value = datetime.replace(/^.*GMT([+-]\d{4}).*$/,'$1');
+    this.name = datetime.replace(/^.*\((.+)\).*$/,'$1');
+    this.date = date;
+    this.datetime = datetime;
+}
+
+// const culcLocalTz = (date) =>{
+//     let timegapHour = String(0 - Math.floor(new Date(date).getTimezoneOffset()/60)) // 获取小时
+//         .replace(/^([+-]?)(\d)$/, '$1' + 0 + '$2') // 单数小时补0
+//         .replace(/^(\d+)$/, '+' + '$1'); // 整数小时补+号
+//     let timegapMinute = String(Math.abs(new Date(date).getTimezoneOffset()%60)) // 获取分钟
+//         .replace(/^(\d)$/, 0 + '$1'); // 单数分钟补0
+//     return `${timegapHour}:${timegapMinute}`;
+// }
+
+
 
