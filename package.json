@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rm -rf dist/* && webpack",
     "public": "cp ./dist/bundle.js public/",
-    "server": "npx http-server",
+    "server": "npx http-server -c-1 . -o /",
     "page":"npm run build && npm run public",
     "dev":"npm run build && npm run public && npm run server"
   },
