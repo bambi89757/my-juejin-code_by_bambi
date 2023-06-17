@@ -125,7 +125,7 @@ function culcMinute(tz) {
 */
 export const transfer2Datetime = (unix, timeZone) => {
     const gap = culcMinute(timeZone);
-    const targetTimeUnixIfUTC = unix + gap * 60 * 1000;
+    const targetTimeUnixIfUTC = +unix + gap * 60 * 1000;
     const t = new Date(targetTimeUnixIfUTC)
     return `${t.getUTCFullYear()}-` +
         `${pl0(t.getUTCMonth() + 1)}-` +
@@ -137,7 +137,7 @@ export const transfer2Datetime = (unix, timeZone) => {
 
 export const culc2Datetime = (unix, timeZone) => {
     // 计算日期需要的常量
-    const d = new Date(unix);
+    const d = new Date(+unix);
     const monthCycleDays = [31,, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     const getMonthCycleDays = (month, year) => monthCycleDays[month] ? monthCycleDays[month] : (year % 4 ? 29 : 28)
     const UTCMonth = d.getUTCMonth();

@@ -1,0 +1,17 @@
+html, body {
+    margin: 0;
+}
+
+textarea, input {
+    background-color: lavender;
+    border: 0;
+    /* border-bottom: 1px dotted darkslateblue; */
+}
+
+h1 {
+    color: darkblue;
+}
+
+h3 {
+    color: lightskyblue;
+}
