@@ -158,9 +158,9 @@ export const culc2Datetime = (unix, timeZone) => {
     const modHours = orgHours % 24;
     const hours = pl0(modHours + (modHours >= 0 ? 0 : 24));
     const orgDate =  d.getUTCDate() + Math.floor(orgHours / 24);
-    const modDate = orgDate % currentCycleDays;
+    const modDate = orgDate % currentCycleDays === 0 ? currentCycleDays : orgDate % currentCycleDays;
     const date = pl0(modDate + (modDate > 0 ? 0 : lastCycleDays));
-    const orgMonth =  d.getUTCMonth() + Math.floor(orgDate / currentCycleDays);
+    const orgMonth =  d.getUTCMonth() + Math.floor(orgDate / currentCycleDays === 1 ? 0 : (orgDate / currentCycleDays));
     const modgMonth = orgMonth % 12;
     const month = pl0(modgMonth + 1 + (modgMonth >= 0 ? 0 : 12));
     const year = d.getUTCFullYear() + Math.floor(orgMonth / 12);
