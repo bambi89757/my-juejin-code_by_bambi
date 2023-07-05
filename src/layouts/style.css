@@ -1,3 +1,7 @@
 main .content-page {
     display: block;
 }
+
+main .header-title {
+    color: white;
+}

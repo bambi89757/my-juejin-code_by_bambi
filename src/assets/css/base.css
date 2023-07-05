@@ -3,12 +3,22 @@ html, body {
 }
 
 main {
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+main * {
+    width: 100%;
 }
 
 main > * {
-    display: flex;
-    justify-content: center;
+    padding: 0 20px;
+}
+
+header {
+    background-color: cornflowerblue;
+    color: white;
 }
 
 textarea, input {
